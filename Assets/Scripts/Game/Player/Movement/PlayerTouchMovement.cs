@@ -65,7 +65,7 @@ namespace Humanoid.Input
                 
                 movementAmount = offset.normalized;
                 Debug.Log("Player vector is " + movementAmount);
-                //TODO float movement
+                //TODO change normilzed vector
             }
         }
 
@@ -103,7 +103,7 @@ namespace Humanoid.Input
             var deltaY = movementAmount.y * playerSpeed;
             var movement = new Vector3(deltaX, 0, deltaY);
             movement = Vector3.ClampMagnitude(movement, playerSpeed);
-            movement.y = gravity;
+            //movement.y = gravity;
             movement *= Time.deltaTime;
             movement = transform.TransformDirection(movement);
             characterController.Move(movement);

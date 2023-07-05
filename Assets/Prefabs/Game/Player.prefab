@@ -1,5 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &162105718286962815
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6469620364269958771}
+  m_Layer: 0
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6469620364269958771
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 162105718286962815}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1569384626595053678}
+  m_Father: {fileID: 1569384627523947596}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1569384626595053675
 GameObject:
   m_ObjectHideFlags: 0
@@ -26,14 +58,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569384626595053675}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.08715578, y: -0, z: -0, w: 0.9961947}
+  m_LocalPosition: {x: 0, y: 1.5, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1569384627523947596}
+  m_Father: {fileID: 6469620364269958771}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
 --- !u!20 &1569384626595053673
 Camera:
   m_ObjectHideFlags: 0
@@ -130,8 +162,9 @@ GameObject:
   - component: {fileID: 1569384627523947584}
   - component: {fileID: 1569384627523947587}
   - component: {fileID: 1569384627523947586}
-  - component: {fileID: 1569384627523947597}
   - component: {fileID: 1569384627523947585}
+  - component: {fileID: 534597445}
+  - component: {fileID: 1569384627553004828}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -151,7 +184,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1569384626595053678}
+  - {fileID: 6469620364269958771}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -223,22 +256,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1569384627523947597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1569384627523947599}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8c3a10c25deacd4cb7ffb7bedd6920a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  horSensitivity: 3
-  verSensitivity: 3
-  maxVert: 45
-  minVert: -45
 --- !u!114 &1569384627523947585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +268,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e54dda5a7247da4cbd218679820f65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  joystickSize: {x: 256, y: 256}
+  playerSpeed: 5
+  joystickSize: 256
   joystick: {fileID: 0}
-  touchInput: {fileID: 489578937219148321, guid: 3e976e7f27bc1f4408370c4d4d16c36f, type: 3}
+--- !u!114 &534597445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1569384627523947599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d53cc1179eab6f4b972f80e66acd816, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraTarget: {fileID: 6469620364269958771}
+  horSensitivity: 0.5
+  verSensitivity: 0.5
+  maxVert: 20
+  minVert: -30
+--- !u!114 &1569384627553004828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1569384627523947599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e01edafcad180ef49938508e9a1c4641, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravity: -9.8
+  jumpHeight: 4
+  playerJump: {fileID: -7931103368676549222, guid: 3e976e7f27bc1f4408370c4d4d16c36f, type: 3}

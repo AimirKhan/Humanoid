@@ -1,7 +1,12 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UniRx;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.InputSystem.LowLevel;
 using Zenject;
+using Touch = UnityEngine.Touch;
 
 namespace Humanoid.Input
 {
@@ -11,6 +16,8 @@ namespace Humanoid.Input
         
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private InputActionReference movement;
+        [SerializeField] private InputActionReference touchInput;
+        [SerializeField] private InputActionReference touchPress;
         
         private void Start()
         {
@@ -22,10 +29,34 @@ namespace Humanoid.Input
                 .AddTo(this);
         }
 
+        private void OnEnable()
+        {
+            touchPress.action.started += OnFingerDown;
+            touchPress.action.canceled += OnFingerUp;
+            //movement.action.started += OnFingerDown;
+            movement.action.performed += OnFingerMove;
+            movement.action.canceled += OnFingerUp;
+        }
+
+        private void OnFingerDown(InputAction.CallbackContext finger)
+        {
+            Debug.Log("Finger pressed at " + touchInput.action.ReadValue<Vector2>());
+        }
+        
+        private void OnFingerMove(InputAction.CallbackContext finger)
+        {
+            
+        }
+
+        private void OnFingerUp(InputAction.CallbackContext finger)
+        {
+            Debug.Log("Finger ended " + touchInput.action.ReadValue<Vector2>());
+        }
+
         private void MovementUpdate(Vector2 direction)
         {
             MoveObject(direction);
-            RotationObject(direction);
+            //RotationObject(direction);
             moveSpeed = playerParams.PlayerSpeed.Value;
         }
         
@@ -42,6 +73,10 @@ namespace Humanoid.Input
             var rotationVector = new Vector3 {x = direction.x, z = direction.y};
             var rotation = Quaternion.LookRotation(rotationVector);
             gameObject.transform.rotation = rotation;
+        }
+
+        private void OnDisable()
+        {
         }
     }
 }

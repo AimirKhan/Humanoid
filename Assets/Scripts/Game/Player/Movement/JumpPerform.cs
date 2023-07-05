@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,30 +9,52 @@ namespace Catventure.Input
 {
     public class JumpPerform : MonoBehaviour
     {
-        [SerializeField] private float jumpForce = 2;
+        [SerializeField] private float jumpHeight = 4;
         [SerializeField] private InputActionReference playerJump;
 
-        private Rigidbody _playerRigidbody;
-     
+        private CharacterController characterController;
+        private float gravity = -9.8f;
+        private float gravityScale = 1;
+        private float velocity;
+        
         private void Awake()
         {
-            _playerRigidbody = GetComponent<Rigidbody>();
-        }
-    
-        private void OnEnable()
-        {
-            playerJump.action.performed += Jump;
+            characterController = GetComponent<CharacterController>();
         }
 
-        private void Jump(InputAction.CallbackContext obj)
+        private void Start()
         {
-            
-            _playerRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            // enable gravity if player is not on the ground
+            Observable.EveryUpdate()
+                .Where(_ => !characterController.isGrounded)
+                .Subscribe(x => MovePlayer())
+                .AddTo(this);
         }
-    
+
+        private void OnEnable()
+        {
+            playerJump.action.performed += PerformJump;
+        }
+
+        private void PerformJump(InputAction.CallbackContext obj)
+        {
+            if (characterController.isGrounded)
+            {
+                Debug.Log("Player jumped!");
+                velocity = Mathf.Sqrt(jumpHeight * -2f * (gravity * gravityScale));
+                MovePlayer();
+            }
+        }
+
+        void MovePlayer()
+        {
+            velocity += gravity * gravityScale * Time.deltaTime;
+            characterController.Move((Vector3.up * velocity * Time.deltaTime));
+        }
+        
         private void OnDisable()
         {
-            playerJump.action.performed -= (jump => _playerRigidbody.AddForce(Vector3.up * jumpForce));
+            playerJump.action.performed -= PerformJump;
         }
     }
 }

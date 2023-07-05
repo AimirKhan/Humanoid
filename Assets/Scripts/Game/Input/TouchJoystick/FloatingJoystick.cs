@@ -16,7 +16,7 @@ namespace Humanoid.Input
         private void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
         }
 
         private void OnDisable()
