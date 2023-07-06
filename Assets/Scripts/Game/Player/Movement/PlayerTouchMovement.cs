@@ -1,4 +1,3 @@
-using System;
 using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -58,6 +57,7 @@ namespace Humanoid.Input
         
         private void OnFingerMove(Finger touch)
         {
+            Debug.Log("Player is grounded " + characterController.isGrounded);
             if (touch == movementFinger)
             {
                 var offset = (Vector3)touch.screenPosition - joyCenter;
@@ -99,6 +99,7 @@ namespace Humanoid.Input
 
         private void Move()
         {
+            /*
             var deltaX = movementAmount.x * playerSpeed;
             var deltaY = movementAmount.y * playerSpeed;
             var movement = new Vector3(deltaX, 0, deltaY);
@@ -107,6 +108,11 @@ namespace Humanoid.Input
             movement *= Time.deltaTime;
             movement = transform.TransformDirection(movement);
             characterController.Move(movement);
+            */
+            var move = new Vector3(movementAmount.x, 0, movementAmount.y);
+            characterController.Move(move * playerSpeed * Time.deltaTime);
+            if (move != Vector3.zero)
+                gameObject.transform.forward = move;
         }
         
         private void OnDisable()

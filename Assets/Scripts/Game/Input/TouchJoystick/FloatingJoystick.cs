@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Humanoid.Input
@@ -16,7 +13,7 @@ namespace Humanoid.Input
         private void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
-            //gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
 
         private void OnDisable()
