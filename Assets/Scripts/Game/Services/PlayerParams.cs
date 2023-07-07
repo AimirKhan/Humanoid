@@ -10,19 +10,23 @@ namespace Humanoid
         Jump
     }
     
-    public class PlayerParams : IPlayerParams
+    public class PlayerValues : IPlayerValues
     {
         private ReactiveProperty<float> playerSpeed = new();
+        private ReactiveProperty<bool> isPlayerGrounded = new(true);
+        
         public ReactiveProperty<float> PlayerSpeed => playerSpeed;
+        public ReactiveProperty<bool> IsPlayerGrounded => isPlayerGrounded;
 
 
         private ReactiveProperty<EPlayerState> playerState = new(EPlayerState.Idle);
         public ReactiveProperty<EPlayerState> PlayerState => playerState;
     }
 
-    public interface IPlayerParams
+    public interface IPlayerValues
     {
         ReactiveProperty<float> PlayerSpeed { get; }
+        ReactiveProperty<bool> IsPlayerGrounded { get; }
         ReactiveProperty<EPlayerState> PlayerState { get; }
     }
 }

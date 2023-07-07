@@ -1,21 +1,31 @@
+using System;
 using UniRx;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
+using Zenject;
 using ETouch = UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Humanoid.Input
 {
     public class PlayerTouchMovement : MonoBehaviour
     {
-        [SerializeField] private float playerSpeed = 3f;
+        [Inject] private IPlayerValues playerValues;
+        [SerializeField] private Transform cameraDirection;
+        [SerializeField] private float playerSpeed = 3;
         [SerializeField] private float joystickSize = 256;
         [SerializeField] private FloatingJoystick joystick;
 
+        [Header("Player Grounded")]
+        [SerializeField] private bool grounded = true;
+        [SerializeField] private float groundedOffset = -0.14f;
+        [SerializeField] private LayerMask groundLayers;
+        
+        private CharacterController characterController;
         private Finger movementFinger;
         private Vector2 movementAmount;
         private Vector3 joyCenter;
-        private CharacterController characterController;
-        private float gravity = -9.8f;
+        private Vector3 playerVelocity;
         private bool isMoving;
 
         private void Awake()
@@ -25,12 +35,26 @@ namespace Humanoid.Input
 
         private void Start()
         {
-            Observable.EveryUpdate() // Update stream
-                .Where(_ => isMoving) // Filter on press any Key
-                .Subscribe(_ => Move())
-                .AddTo(this); // Link subscribe to GameObject
+            Init();
         }
 
+        private void Init()
+        {
+            Observable.EveryUpdate() // Update stream
+                .Where(_ => isMoving) // Filter on press any Key
+                .Subscribe(_ => CharacterUpdate())
+                .AddTo(this); // Link subscribe to GameObject
+
+            Observable.EveryUpdate()
+                .Where(ctx => playerValues.IsPlayerGrounded.Value != true)
+                .Subscribe(ctx => GroundedCheck());
+        }
+
+        private void CharacterUpdate()
+        {
+            Move();
+        }
+        
         private void OnEnable()
         {
             EnhancedTouchSupport.Enable();
@@ -57,14 +81,12 @@ namespace Humanoid.Input
         
         private void OnFingerMove(Finger touch)
         {
-            Debug.Log("Player is grounded " + characterController.isGrounded);
             if (touch == movementFinger)
             {
                 var offset = (Vector3)touch.screenPosition - joyCenter;
                 joystick.knob.position = joyCenter + Vector3.ClampMagnitude(offset, joystickSize / 2);
                 
                 movementAmount = offset.normalized;
-                Debug.Log("Player vector is " + movementAmount);
                 //TODO change normilzed vector
             }
         }
@@ -99,22 +121,26 @@ namespace Humanoid.Input
 
         private void Move()
         {
-            /*
-            var deltaX = movementAmount.x * playerSpeed;
-            var deltaY = movementAmount.y * playerSpeed;
-            var movement = new Vector3(deltaX, 0, deltaY);
-            movement = Vector3.ClampMagnitude(movement, playerSpeed);
-            //movement.y = gravity;
-            movement *= Time.deltaTime;
-            movement = transform.TransformDirection(movement);
-            characterController.Move(movement);
-            */
+            var rotationY = cameraDirection.rotation.eulerAngles.y;
+            transform.rotation = Quaternion.Euler(0, rotationY, 0);
+            
             var move = new Vector3(movementAmount.x, 0, movementAmount.y);
+            move = transform.TransformDirection(move);
             characterController.Move(move * playerSpeed * Time.deltaTime);
             if (move != Vector3.zero)
                 gameObject.transform.forward = move;
+            GroundedCheck();
         }
         
+        private void GroundedCheck()
+        {
+            var position = transform.position;
+            var spherePosition = new Vector3(position.x, position.y - groundedOffset, position.z);
+            grounded = Physics.CheckSphere(spherePosition, characterController.radius, groundLayers,
+                QueryTriggerInteraction.Ignore);
+            playerValues.IsPlayerGrounded.Value = grounded;
+        }
+
         private void OnDisable()
         {
             EnhancedTouchSupport.Enable();

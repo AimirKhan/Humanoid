@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using Humanoid;
 using Zenject;
 
@@ -12,7 +13,8 @@ namespace Installer.Main
 
         private void Bind()
         {
-            Container.BindInterfacesTo<PlayerParams>().AsSingle();
+            Container.BindInterfacesTo<PlayerValues>().AsSingle();
+            Container.BindInterfacesTo<GlobalValues>().AsSingle();
         }
     }
 }

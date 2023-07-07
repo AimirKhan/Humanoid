@@ -1,22 +1,22 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
-namespace Catventure.Input
+namespace Humanoid.Input
 {
     public class JumpPerform : MonoBehaviour
     {
-        [SerializeField] private float jumpHeight = 4;
+        [Inject] private IGlobalValues globalValues;
+        [Inject] private IPlayerValues playerValues;
+        [SerializeField] private float jumpHeight = 1;
         [SerializeField] private InputActionReference playerJump;
 
         private CharacterController characterController;
+        private Vector3 playerVelocity;
+        private bool isPlayerGrounded = true;
         private float gravity = -9.8f;
-        private float gravityScale = 1;
-        private float velocity;
-        
+
         private void Awake()
         {
             characterController = GetComponent<CharacterController>();
@@ -24,9 +24,17 @@ namespace Catventure.Input
 
         private void Start()
         {
+            Init();
+        }
+
+        private void Init()
+        {
             // enable gravity if player is not on the ground
+            playerValues.IsPlayerGrounded
+                .Subscribe(ctx => isPlayerGrounded = ctx)
+                .AddTo(this);
             Observable.EveryUpdate()
-                .Where(_ => !characterController.isGrounded)
+                .Where(_ => !isPlayerGrounded)
                 .Subscribe(x => MovePlayer())
                 .AddTo(this);
         }
@@ -38,20 +46,22 @@ namespace Catventure.Input
 
         private void PerformJump(InputAction.CallbackContext obj)
         {
-            if (characterController.isGrounded)
+            if (isPlayerGrounded)
             {
-                Debug.Log("Player jumped!");
-                velocity = Mathf.Sqrt(jumpHeight * -2f * (gravity * gravityScale));
+                Debug.Log("Player jump started!");
+                playerVelocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
+                playerValues.IsPlayerGrounded.Value = false;
                 MovePlayer();
             }
         }
 
-        void MovePlayer()
+        private void MovePlayer()
         {
-            velocity += gravity * gravityScale * Time.deltaTime;
-            characterController.Move((Vector3.up * velocity * Time.deltaTime));
+            Debug.Log("Player is grounded " + isPlayerGrounded);
+            playerVelocity.y += gravity * Time.deltaTime;
+            characterController.Move(playerVelocity * Time.deltaTime);
         }
-        
+
         private void OnDisable()
         {
             playerJump.action.performed -= PerformJump;

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 using ETouch = UnityEngine.InputSystem.EnhancedTouch;
@@ -9,7 +6,6 @@ namespace Humanoid.Input
 {
     public class PlayerTouchRotate : MonoBehaviour
     {
-        [SerializeField] private Transform cameraTarget;
         [SerializeField] private float horSensitivity = 1f;
         [SerializeField] private float verSensitivity = 1f;
         
@@ -21,12 +17,6 @@ namespace Humanoid.Input
         private Vector2 lastFingerPos;
         private Vector2 movementAmount;
         private bool isMoving;
-        
-        void Start()
-        {
-            var body = GetComponent<Rigidbody>();
-            if (body != null) body.freezeRotation = true;
-        }
         
         private void OnEnable()
         {
@@ -75,19 +65,20 @@ namespace Humanoid.Input
             rotationX = Mathf.Clamp(rotationX, minVert, maxVert);
             var delta = -fingerPos.x * verSensitivity;
             var rotationY = transform.localEulerAngles.y + delta;
-            
-            transform.localEulerAngles = Vector3.up * rotationY;
+            //transform.localEulerAngles = Vector3.up * rotationY;
 
-            movementAmount = new Vector2(rotationY, rotationX);
             // Camera vertical rotation
-            cameraTarget.localEulerAngles = Vector3.right * rotationX;
+            //cameraTarget.localEulerAngles = Vector3.right * rotationX;
+            // Full rotation
+            transform.localEulerAngles = new Vector3(rotationX, rotationY, 0);
             
+            movementAmount = new Vector2(rotationY, rotationX);
             lastFingerPos = finger.currentTouch.screenPosition;
         }
         
         private void OnDisable()
         {
-            EnhancedTouchSupport.Enable();
+            EnhancedTouchSupport.Disable();
             ETouch.Touch.onFingerDown -= OnFingerDown;
             ETouch.Touch.onFingerMove -= OnFingerMove;
             ETouch.Touch.onFingerUp -= OnFingerUp;
